@@ -112,6 +112,23 @@ class ResultsParser {
   }
 
   static findAnnotationPoint(trace) {
+    const items = trace.match(/at .* in ((?<path>[^:]+):(?<line>\d+))/g);
+    if (Array.isArray(items)) {
+      const result = [];
+      items.forEach(item => {
+        const match = item.match(/at .* in ((?<path>[^:]+):(?<line>\d+))/);
+        const point = {
+          path: match ? match.groups.path : '',
+          line: match ? Number(match.groups.line) : 0,
+        };
+        if (point.line > 0) {
+          result.push(point);
+        }
+      });
+      if (result.length > 0) {
+        return result[0];
+      }
+    }
     const match = trace.match(/at .* in ((?<path>[^:]+):(?<line>\d+))/);
     return {
       path: match ? match.groups.path : '',
